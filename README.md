@@ -20,7 +20,7 @@
 
 ### 直接安装
 
-1. 下载项目根目录下的 `chapter_ai_transform.crx` 文件。
+1. 下载 `chapter_ai_transform.crx` 文件（下载地址:[https://github.com/pipdax/chapter_ai_transform/releases](https://github.com/pipdax/chapter_ai_transform/releases)）。
 2. 在 Chrome 浏览器中访问 `chrome://extensions/`。
 3. 确保右上角的 **"开发者模式" (Developer mode)** 已开启。
 4. 将下载好的 `.crx` 文件直接拖拽到扩展程序页面中。
