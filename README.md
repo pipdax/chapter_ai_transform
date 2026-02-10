@@ -1,8 +1,6 @@
-# 网页文章可视化重构器 (Chapter AI Transform)
+# ![Icon](chapter_ai_transform/icons/icon128.png) 网页文章可视化重构器 (Chapter AI Transform)
 
 > 一键将冗长的网页文章转化为极简现代、高可读性的可视化阅读卡片。
-
-![Icon](chapter_ai_transform/icons/icon128.png)
 
 ## 📖 简介
 
@@ -20,6 +18,9 @@
 
 ## 🛠️ 安装说明
 
+### 直接安装
+
+
 ### 开发模式安装
 
 1. 克隆或下载本项目到本地。
@@ -28,6 +29,24 @@
 4. 点击 **"加载已解压的扩展程序" (Load unpacked)**。
 5. 选择本项目中的 `chapter_ai_transform` 目录。
 6. 安装完成！
+
+## 🖼️ 界面预览
+
+### 主界面与模板选择
+插件侧边栏主界面，包含文章标题、模板选择（摘要卡片、层级结构、概念卡片等）以及“生成可视化文章”按钮。
+![主界面与模板选择](assets/images/step1.png)
+
+### 可视化结果预览
+AI 生成后的“概念卡片”预览效果，排版精美且支持导出功能。
+![可视化结果预览](assets/images/result_概念卡片.png)
+
+### 模型配置
+插件的 AI 模型配置界面，支持自定义 API Endpoint、模型名称、API Key 等参数，以及查看调试日志。
+![模型配置](assets/images/config.png)
+
+### 历史记录
+插件的历史记录管理功能，方便回溯之前生成的总结内容。
+![历史记录](assets/images/history.png)
 
 ## 🚀 使用指南
 
