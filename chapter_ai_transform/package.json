@@ -1,0 +1,12 @@
+{
+    "name": "chapter-ai-transform",
+    "version": "1.0.0",
+    "description": "网页文章可视化重构器 Chrome 插件",
+    "type": "module",
+    "scripts": {
+        "dev": "echo 'Load extension in Chrome: chrome://extensions -> Load unpacked'",
+        "build": "echo 'No build step needed for vanilla JS extension'"
+    },
+    "devDependencies": {},
+    "dependencies": {}
+}

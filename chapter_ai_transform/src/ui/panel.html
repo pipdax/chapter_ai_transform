@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 文章可视化</title>
+  <link rel="stylesheet" href="panel.css">
+  <script src="html2canvas.min.js"></script>
+</head>
+
+<body>
+  <div class="panel">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <span class="logo">网页信息<span class="logo-accent">AI转换</span></span>
+      </div>
+      <div class="header-center">
+        <div class="prompt-selector" id="promptSelector">
+          <span class="prompt-label" id="currentPromptLabel">📋 摘要卡片</span>
+          <svg class="prompt-arrow" width="12" height="12" viewBox="0 0 12 12">
+            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+          </svg>
+          <div class="prompt-dropdown" id="promptDropdown">
+            <div class="prompt-group">
+              <div class="prompt-group-title">系统内置</div>
+              <div class="prompt-list" id="builtinPromptList"></div>
+            </div>
+            <div class="prompt-group">
+              <div class="prompt-group-title">我的模板</div>
+              <div class="prompt-list" id="customPromptList"></div>
+              <button class="prompt-add-btn" id="addPromptBtn">+ 新建模板</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="header-btn" id="historyBtn" title="历史记录">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12,6 12,12 16,14" />
+          </svg>
+        </button>
+        <button class="header-btn" id="configBtn" title="配置">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+        <button class="header-btn" id="minimizeBtn" title="最小化">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </button>
+        <button class="header-btn" id="closeBtn" title="关闭">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Step 1: Input -->
+      <section class="step step-input" id="stepInput">
+        <div class="input-tabs">
+          <button class="input-tab active" data-mode="auto">自动抽取</button>
+          <button class="input-tab" data-mode="selection">使用选中</button>
+          <button class="input-tab" data-mode="manual">手动输入</button>
+        </div>
+
+        <div class="content-info">
+          <span class="content-title" id="contentTitle">等待加载...</span>
+        </div>
+
+        <div class="content-preview">
+          <textarea id="contentTextarea" placeholder="内容将在这里显示..."></textarea>
+        </div>
+
+        <div class="content-stats">
+          <span id="charCount">0 字</span>
+          <span class="stats-divider">|</span>
+          <span id="tokenCount">~0 tokens</span>
+        </div>
+
+        <button class="generate-btn" id="generateBtn">
+          <span class="btn-icon">✨</span>
+          <span class="btn-text">生成可视化文章</span>
+        </button>
+      </section>
+
+      <!-- Step 2: Output -->
+      <section class="step step-output hidden" id="stepOutput">
+        <div class="output-container">
+          <iframe id="outputFrame" sandbox="allow-scripts" class="output-frame"></iframe>
+          <div class="loading-overlay hidden" id="loadingOverlay">
+            <div class="spinner"></div>
+            <span class="loading-text">正在生成...</span>
+            <span class="loading-hint">您可以点击右上角最小化，完成后会有提示<br>（请勿刷新页面）</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 悬浮操作按钮组 - 独立于 main，fixed 定位 -->
+    <div class="floating-actions hidden" id="floatingActions">
+      <button class="floating-btn" id="backBtn" title="返回编辑">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12,19 5,12 12,5" />
+        </svg>
+      </button>
+      <button class="floating-btn" id="copyBtn" title="复制 HTML">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+      </button>
+      <button class="floating-btn" id="downloadCodeBtn" title="下载 HTML">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+      </button>
+      <button class="floating-btn" id="downloadImageBtn" title="下载图片">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <polyline points="21 15 16 10 5 21" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Config Overlay -->
+    <div class="overlay hidden" id="configOverlay">
+      <div class="overlay-panel config-panel">
+        <div class="overlay-header">
+          <h3>模型配置</h3>
+          <button class="overlay-close" id="configCloseBtn">&times;</button>
+        </div>
+        <div class="overlay-body">
+          <div class="form-group">
+            <label for="configEndpoint">API Endpoint</label>
+            <input type="text" id="configEndpoint" placeholder="https://api.openai.com/v1/chat/completions">
+          </div>
+          <div class="form-group">
+            <label for="configModel">模型名称</label>
+            <input type="text" id="configModel" placeholder="gpt-4o-mini">
+          </div>
+          <div class="form-group">
+            <label for="configApiKey">API Key</label>
+            <input type="password" id="configApiKey" placeholder="sk-...">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="configTemperature">Temperature</label>
+              <input type="number" id="configTemperature" min="0" max="2" step="0.1" value="0.7">
+            </div>
+            <div class="form-group">
+              <label for="configMaxTokens">Max Tokens</label>
+              <input type="number" id="configMaxTokens" min="100" max="128000" step="100" value="4096">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn secondary" id="testConnectionBtn">测试连接</button>
+            <button class="btn primary" id="saveConfigBtn">保存配置</button>
+          </div>
+          <div class="connection-status hidden" id="connectionStatus"></div>
+
+          <div class="form-divider"></div>
+
+          <div class="form-group">
+            <label class="toggle-label">
+              <span>调试模式</span>
+              <input type="checkbox" id="debugModeToggle">
+              <span class="toggle-switch"></span>
+            </label>
+            <p class="form-hint">开启后将记录请求/响应日志</p>
+          </div>
+          <button class="btn secondary full-width" id="viewLogsBtn">查看日志</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logs Overlay -->
+    <div class="overlay hidden" id="logsOverlay">
+      <div class="overlay-panel logs-panel">
+        <div class="overlay-header">
+          <h3>请求日志</h3>
+          <div class="overlay-header-actions">
+            <button class="btn secondary small" id="copyAllLogsBtn">复制全部</button>
+            <button class="btn secondary small" id="clearLogsBtn">清空</button>
+            <button class="overlay-close" id="logsCloseBtn">&times;</button>
+          </div>
+        </div>
+        <div class="overlay-body">
+          <div class="logs-list" id="logsList">
+            <div class="logs-empty">暂无日志</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Overlay -->
+    <div class="overlay hidden" id="historyOverlay">
+      <div class="overlay-panel history-panel">
+        <div class="overlay-header">
+          <h3>历史记录</h3>
+          <button class="overlay-close" id="historyCloseBtn">&times;</button>
+        </div>
+        <div class="overlay-body">
+          <div class="history-list" id="historyList">
+            <div class="history-empty">暂无历史记录</div>
+          </div>
+        </div>
+        <div class="overlay-footer">
+          <button class="btn btn-danger" id="clearHistoryBtn">清空全部历史</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prompt Editor Overlay -->
+    <div class="overlay hidden" id="promptEditorOverlay">
+      <div class="overlay-panel prompt-editor-panel">
+        <div class="overlay-header">
+          <h3 id="promptEditorTitle">新建模板</h3>
+          <button class="overlay-close" id="promptEditorCloseBtn">&times;</button>
+        </div>
+        <div class="overlay-body">
+          <div class="form-group">
+            <label for="promptName">模板名称</label>
+            <input type="text" id="promptName" placeholder="我的模板">
+          </div>
+          <div class="form-group">
+            <label for="promptDescription">描述</label>
+            <input type="text" id="promptDescription" placeholder="简短描述模板用途">
+          </div>
+          <div class="form-group">
+            <label for="promptTemplate">Prompt 模板</label>
+            <textarea id="promptTemplate" rows="12" placeholder="使用 {{content}} 表示文章内容占位符"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn secondary" id="cancelPromptBtn">取消</button>
+            <button class="btn primary" id="savePromptBtn">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast hidden" id="toast">
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+  </div>
+
+  <script type="module" src="panel.js"></script>
+</body>
+
+</html>
